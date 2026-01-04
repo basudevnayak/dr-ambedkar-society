@@ -32,3 +32,257 @@
     @apply w-full;
   }
 }
+
+@layer components {
+  /* Gentle pulse animation */
+  @keyframes gentle-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+  }
+  
+  .animate-gentle-pulse {
+    animation: gentle-pulse 1.5s ease-in-out infinite;
+  }
+  
+  /* Smooth fade in for slider */
+  @keyframes slide-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-slide-fade-in {
+    animation: slide-fade-in 0.7s ease-out forwards;
+  }
+  
+  /* Floating animation */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Shine effect for buttons */
+  @keyframes shine {
+    to {
+      background-position: 200% center;
+    }
+  }
+  
+  .animate-shine {
+    background: linear-gradient(
+      90deg,
+      transparent 25%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 75%
+    );
+    background-size: 200% auto;
+    animation: shine 2s linear infinite;
+  }
+}
+
+
+
+/* headers */
+
+@layer components {
+  /* Smooth underline animation */
+  .nav-underline {
+    position: relative;
+  }
+  
+  .nav-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    transition: width 0.3s ease-out;
+  }
+  
+  .nav-underline:hover::after {
+    width: 100%;
+  }
+  
+  .nav-underline.active::after {
+    width: 100%;
+  }
+  
+  /* Dropdown animation */
+  @keyframes dropdownFade {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .dropdown-animate {
+    animation: dropdownFade 0.3s ease-out forwards;
+  }
+  
+  /* Mobile menu slide in */
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  .slide-in-left {
+    animation: slideInLeft 0.3s ease-out forwards;
+  }
+  
+  /* Hamburger menu animation */
+  .hamburger-line {
+    transition: all 0.3s ease;
+  }
+  
+  /* Gradient text effect */
+  .gradient-text {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Button hover effect */
+  .button-glow {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+  }
+  
+  .button-glow:hover {
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.8);
+  }
+  
+  /* Floating animation for donate button */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Loading bar animation */
+  @keyframes loadingBar {
+    0% {
+      transform: scaleX(0);
+    }
+    100% {
+      transform: scaleX(1);
+    }
+  }
+  
+  .loading-bar {
+    transform-origin: left;
+    animation: loadingBar 5s linear infinite;
+  }
+}
+
+
+@layer components {
+  /* Glass morphism effect for transparent header */
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .dark .glass-effect {
+    background: rgba(17, 24, 39, 0.7);
+    border: 1px solid rgba(55, 65, 81, 0.3);
+  }
+  
+  /* Smooth hide/show animation */
+  @keyframes slideDown {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideUp {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-100%);
+    }
+  }
+  
+  .slide-down {
+    animation: slideDown 0.5s ease-out;
+  }
+  
+  .slide-up {
+    animation: slideUp 0.5s ease-in;
+  }
+  
+  /* Floating shadow effect for solid header */
+  .header-shadow {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .header-shadow {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@layer components {
+  /* White text with shadow for better visibility */
+  .text-white-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Glass effect for transparent header elements */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Enhanced hover effects for white text */
+  .hover-white-glow:hover {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+  
+  /* Active state for white text links */
+  .active-white-glow {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+  }
+}
