@@ -6,7 +6,7 @@ import { useTheme } from '@/app/context/ThemeContext';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(true); // 👈 start as true
   const [activeLink, setActiveLink] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState({ about: false, focus: false });
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -22,46 +22,42 @@ export default function Header() {
     }
   };
 
-  // Handle scroll events with hide/show behavior
+  /* 🔥 PAGE LOAD FIX - Always show white background on load */
+  useEffect(() => {
+    setScrolled(window.scrollY >= 0);
+  }, []);
+
+  /* SCROLL HANDLER */
   useEffect(() => {
     const handleScroll = () => {
-      if (typeof window === 'undefined') return;
-      
       const currentScrollY = window.scrollY;
-      
-      // For transparency effect - change to solid after 10px scroll
-      const isScrolled = currentScrollY > 10;
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled);
-      }
 
-      // For hide/show behavior (scroll down = hide, scroll up = show)
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // Scrolling DOWN - hide header
+      // Always show white background
+      setScrolled(currentScrollY >= 0);
+
+      // Hide/show header on scroll
+      if (currentScrollY > lastScrollY && currentScrollY > 120) {
         setVisible(false);
-      } else if (currentScrollY < lastScrollY) {
-        // Scrolling UP - show header
+      } else {
         setVisible(true);
       }
 
-      // Update scroll progress
+      // Progress bar
       const totalHeight = document.body.scrollHeight - window.innerHeight;
-      const progress = totalHeight > 0 ? (currentScrollY / totalHeight) * 100 : 0;
-      setScrollProgress(progress);
+      setScrollProgress(
+        totalHeight > 0 ? (currentScrollY / totalHeight) * 100 : 0
+      );
 
-      // Update active link based on scroll position
+      // Active section detection
       const sections = ['home', 'about', 'focus', 'programmes', 'events', 'contact'];
-      const currentSection = sections.find(section => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
+      for (const id of sections) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= 120 && rect.bottom >= 120) {
+          setActiveLink(id);
+          break;
         }
-        return false;
-      });
-      
-      if (currentSection) {
-        setActiveLink(currentSection);
       }
 
       setLastScrollY(currentScrollY);
@@ -69,14 +65,12 @@ export default function Header() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [scrolled, lastScrollY]);
+  }, [lastScrollY]);
 
   // Close mobile menu on resize
   useEffect(() => {
     const handleResize = () => {
-      if (typeof window === 'undefined') return;
-      
-      if (window.innerWidth >= 768) {
+      if (window.innerWidth >= 1024) {
         setMobileMenuOpen(false);
         if (typeof document !== 'undefined') {
           document.body.style.overflow = 'auto';
@@ -112,8 +106,6 @@ export default function Header() {
   };
 
   const scrollToSection = (sectionId) => {
-    if (typeof document === 'undefined') return;
-    
     const element = document.getElementById(sectionId);
     if (element) {
       const headerHeight = headerRef.current?.offsetHeight || 80;
@@ -125,9 +117,7 @@ export default function Header() {
       });
       
       setMobileMenuOpen(false);
-      if (typeof document !== 'undefined') {
-        document.body.style.overflow = 'auto';
-      }
+      document.body.style.overflow = 'auto';
       closeAllDropdowns();
     }
   };
@@ -164,95 +154,59 @@ export default function Header() {
     { id: 'contact', label: 'CONTACT US' }
   ];
 
-  // Always show white text when not scrolled
-  const getNavTextColor = () => {
-    return scrolled 
-      ? theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-      : 'text-white';
-  };
-
-  const getNavHoverColor = () => {
-    return scrolled 
-      ? theme === 'dark' ? 'hover:text-blue-400' : 'hover:text-blue-600'
-      : 'hover:text-blue-300';
-  };
-
-  const getActiveNavColor = () => {
-    return scrolled 
-      ? theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
-      : 'text-white';
-  };
-
-  const getActiveNavBg = () => {
-    return scrolled 
-      ? theme === 'dark' ? 'bg-blue-500/20' : 'bg-blue-50'
-      : 'bg-white/20';
-  };
-
-  const getLogoBg = () => {
-    return scrolled 
-      ? theme === 'dark' 
-        ? 'bg-blue-500 hover:bg-blue-600' 
-        : 'bg-blue-600 hover:bg-blue-700'
-      : 'bg-white/20 hover:bg-white/30 backdrop-blur-sm';
-  };
-
-  const getDonateButtonStyle = () => {
-    return scrolled
-      ? 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white'
-      : 'bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/30 hover:border-white/50';
-  };
+  // Navigation colors (always white text since scrolled is always true)
+  const navText = theme === 'dark' ? 'text-gray-300' : 'text-gray-700';
+  const navHover = theme === 'dark' ? 'hover:text-blue-400' : 'hover:text-blue-600';
+  const activeColor = theme === 'dark' ? 'text-blue-400' : 'text-blue-600';
+  const activeBg = theme === 'dark' ? 'bg-blue-500/20' : 'bg-blue-50';
 
   const getHamburgerColor = () => {
     if (mobileMenuOpen) return 'bg-blue-500';
-    return scrolled 
-      ? theme === 'dark' ? 'bg-gray-300' : 'bg-gray-700'
-      : 'bg-white';
+    return theme === 'dark' ? 'bg-gray-300' : 'bg-gray-700';
   };
 
   return (
     <>
+      {/* HEADER */}
       <header
         ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
-          visible 
-            ? scrolled 
-              ? (theme === 'dark' 
-                  ? 'bg-gray-900/95 backdrop-blur-md shadow-lg border-b border-gray-700/50 py-2 translate-y-0' 
-                  : 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/50 py-2 translate-y-0')
-              : 'bg-transparent py-3 translate-y-0'
-            : '-translate-y-full'
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          visible ? 'translate-y-0' : '-translate-y-full'
+        } ${
+          theme === 'dark'
+            ? 'bg-gray-900/95 border-b border-gray-700/50'
+            : 'bg-white/95 border-b border-gray-200/50'
+        } backdrop-blur-md shadow-lg`}
       >
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
-            <div 
+          <div className="flex justify-between items-center h-16">
+            {/* LOGO */}
+            <div
               className="flex items-center space-x-2 cursor-pointer group"
               onClick={() => scrollToSection('home')}
             >
-              <div className={`p-2 rounded-lg transition-all duration-300 ${getLogoBg()}`}>
+              <div className={`p-2 rounded-lg transition-all duration-300 ${
+                theme === 'dark' 
+                  ? 'bg-blue-500 hover:bg-blue-600' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}>
                 <i className="fas fa-hands-helping text-xl text-white"></i>
               </div>
               <div className="transition-all duration-300 group-hover:scale-105">
-                <h1 className={`text-xl font-bold transition-colors duration-300 ${
-                  scrolled 
-                    ? theme === 'dark' ? 'text-white' : 'text-gray-800'
-                    : 'text-white'
+                <h1 className={`text-xl font-bold ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-800'
                 }`}>
                   Dr. Ambedkar Society
                 </h1>
-                <p className={`text-xs transition-colors duration-300 ${
-                  scrolled 
-                    ? theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    : 'text-white/80'
+                <p className={`text-xs ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                 }`}>
                   Serving Humanity Since 1995
                 </p>
               </div>
             </div>
 
-            {/* Desktop Navigation */}
+            {/* DESKTOP NAVIGATION */}
             <nav className="hidden lg:flex items-center space-x-1">
               {navItems.map((item) => (
                 <div key={item.id} className="relative">
@@ -264,8 +218,8 @@ export default function Header() {
                         onMouseLeave={() => setDropdownOpen(prev => ({ ...prev, [item.id]: false }))}
                         className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 ${
                           activeLink === item.id
-                            ? `${getActiveNavBg()} ${getActiveNavColor()}`
-                            : `${getNavTextColor()} ${getNavHoverColor()}`
+                            ? `${activeBg} ${activeColor}`
+                            : `${navText} ${navHover}`
                         }`}
                       >
                         <span className="font-medium">{item.label}</span>
@@ -311,15 +265,15 @@ export default function Header() {
                       onClick={() => scrollToSection(item.id)}
                       className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 relative group ${
                         activeLink === item.id
-                          ? `${getActiveNavColor()}`
-                          : `${getNavTextColor()} ${getNavHoverColor()}`
+                          ? `${activeColor}`
+                          : `${navText} ${navHover}`
                       }`}
                     >
                       {item.label}
                       <span className={`absolute bottom-0 left-1/2 w-0 h-0.5 -translate-x-1/2 transition-all duration-300 ${
-                        activeLink === item.id || scrolled
+                        activeLink === item.id
                           ? 'w-3/4 bg-blue-500' 
-                          : 'group-hover:w-3/4 bg-white'
+                          : 'group-hover:w-3/4 bg-blue-500'
                       }`}></span>
                     </button>
                   )}
@@ -327,15 +281,13 @@ export default function Header() {
               ))}
             </nav>
 
-            {/* Right side buttons */}
+            {/* RIGHT SIDE BUTTONS */}
             <div className="flex items-center space-x-3">
               {/* Theme Toggle */}
-              <div className={scrolled ? '' : 'backdrop-blur-sm bg-white/10 rounded-lg p-1'}>
-                <ThemeToggle />
-              </div>
+              <ThemeToggle />
               
               {/* Donate Button - Desktop */}
-              <button className={`hidden lg:flex items-center px-5 py-2.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl group ${getDonateButtonStyle()}`}>
+              <button className="hidden lg:flex items-center px-5 py-2.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl group bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white">
                 <i className="fas fa-hand-holding-heart mr-2 group-hover:animate-bounce"></i>
                 DONATE NOW
               </button>
@@ -344,11 +296,9 @@ export default function Header() {
               <button
                 onClick={toggleMobileMenu}
                 className={`lg:hidden p-2 rounded-lg transition-all duration-300 ${
-                  scrolled
-                    ? theme === 'dark'
-                      ? 'hover:bg-gray-800'
-                      : 'hover:bg-gray-100'
-                    : 'hover:bg-white/20'
+                  theme === 'dark'
+                    ? 'hover:bg-gray-800'
+                    : 'hover:bg-gray-100'
                 }`}
                 aria-label="Toggle menu"
               >
@@ -369,7 +319,7 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* MOBILE MENU OVERLAY */}
       <div className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${
         mobileMenuOpen 
           ? 'opacity-100 visible' 
@@ -399,7 +349,7 @@ export default function Header() {
                   <i className="fas fa-hands-helping text-xl text-white"></i>
                 </div>
                 <div>
-                  <h1 className={`text-lg font-bold ${
+                  {/* <h1 className={`text-lg font-bold ${
                     theme === 'dark' ? 'text-white' : 'text-gray-800'
                   }`}>
                     Dr. Ambedkar Society
@@ -408,7 +358,7 @@ export default function Header() {
                     theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Serving Humanity Since 1995
-                  </p>
+                  </p> */}
                 </div>
               </div>
               <button
@@ -526,7 +476,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Scroll Progress Indicator */}
+      {/* SCROLL PROGRESS INDICATOR */}
       <div className="fixed top-0 left-0 right-0 h-1 z-50">
         <div 
           className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300 ease-out"
