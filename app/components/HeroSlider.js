@@ -208,7 +208,8 @@ export default function HeroSlider() {
   return (
     <section 
       id="home" 
-      className="relative overflow-hidden"
+      className="relative overflow-hidden mt-[65px]"
+
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
