@@ -286,3 +286,54 @@
     text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
   }
 }
+
+/* app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #f5f0ff 0%, #e9ddff 100%);
+  min-height: 100vh;
+}
+
+@layer components {
+  .glass-morphism {
+    @apply bg-white/70 backdrop-blur-lg border border-white/50 shadow-xl;
+  }
+  
+  .menu-card {
+    @apply glass-morphism rounded-3xl p-6 transition-all duration-300 
+           hover:scale-[1.02] hover:bg-white/80 hover:shadow-2xl
+           border border-purple-100/50;
+  }
+  
+  .btn-primary {
+    @apply bg-gradient-to-r from-purple-700 to-purple-900 text-white 
+           font-semibold py-4 px-8 rounded-full text-lg
+           shadow-lg shadow-purple-500/30
+           hover:shadow-xl hover:shadow-purple-500/40 
+           hover:scale-105 active:scale-95
+           transition-all duration-200
+           flex items-center gap-3;
+  }
+  
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/40 backdrop-blur-sm 
+           flex items-center justify-center p-4 z-50
+           animate-in fade-in duration-300;
+  }
+  
+  .modal-content {
+    @apply bg-white/95 backdrop-blur-xl rounded-3xl 
+           max-w-md w-full p-8 shadow-2xl
+           border border-white/50
+           animate-in zoom-in-95 duration-300;
+  }
+}
